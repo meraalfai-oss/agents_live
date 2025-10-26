@@ -977,8 +977,14 @@ async def example_usage():
     # Mock database pool for example
     db_pool = None  # In production, use actual asyncpg pool
     
+    # Get API key from environment variable (NEVER hardcode)
+    import os
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY environment variable must be set")
+    
     orchestrator = AIAgentOrchestrator(
-        api_key="your-anthropic-api-key",
+        api_key=api_key,
         db_pool=db_pool
     )
     

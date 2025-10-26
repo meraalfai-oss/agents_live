@@ -390,8 +390,6 @@ class BaseAgent(ABC):
         data: bytes | str,
         timeout: int = 30
     ) -> Optional[Any]:
-        """Send request and wait for reply"""
-        if not HAS_NATS or not self.nc:
         """
         Send request and wait for reply.
 
@@ -401,7 +399,7 @@ class BaseAgent(ABC):
             As a result, callers should check the type of the returned value at runtime
             if type safety is required.
         """
-        if not self.nc:
+        if not HAS_NATS or not self.nc:
             return None
         
         try:
