@@ -1,0 +1,269 @@
+{
+  "benchmark_timestamp": "2025-10-20T17:25:31.285901",
+  "iterations_per_agent": 100,
+  "measurement_method": "Performance timing with statistics.median/quantiles",
+  "benchmarks": [
+    {
+      "agent_name": "AgentBenchmark",
+      "file": "agent_benchmarks.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.288338",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "BackupManager",
+      "file": "backup_manager.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.288724",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "AsyncTaskQueue",
+      "file": "task_queue.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.292688",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "EnhancedComponentTester",
+      "file": "testing_framework.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.293028",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "AgentTester",
+      "file": "agent_tester.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.293362",
+      "status": "SUCCESS",
+      "iterations": 100,
+      "initialization": {
+        "mean_ms": 0.0,
+        "median_ms": 0.0,
+        "p50_ms": 0.0,
+        "p95_ms": 0.0,
+        "p99_ms": 0.03,
+        "min_ms": 0.0,
+        "max_ms": 0.03,
+        "std_dev_ms": 0.0
+      },
+      "operations": {
+        "test_agent_comprehensive": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        },
+        "test_agent_initialization": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        },
+        "test_agent_methods": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        },
+        "test_all_agents": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        }
+      }
+    },
+    {
+      "agent_name": "AgentActivator",
+      "file": "activate_agents.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.294279",
+      "status": "SUCCESS",
+      "iterations": 100,
+      "initialization": {
+        "mean_ms": 0.01,
+        "median_ms": 0.01,
+        "p50_ms": 0.01,
+        "p95_ms": 0.01,
+        "p99_ms": 0.02,
+        "min_ms": 0.01,
+        "max_ms": 0.02,
+        "std_dev_ms": 0.0
+      },
+      "operations": {
+        "activate_agent_manager": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.32,
+            "median_ms": 0.31,
+            "p95_ms": 0.39,
+            "min_ms": 0.29,
+            "max_ms": 0.55
+          }
+        },
+        "activate_learning_agent": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.31,
+            "median_ms": 0.3,
+            "p95_ms": 0.36,
+            "min_ms": 0.29,
+            "max_ms": 0.37
+          }
+        },
+        "activate_project_agent": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.31,
+            "median_ms": 0.3,
+            "p95_ms": 0.36,
+            "min_ms": 0.29,
+            "max_ms": 0.36
+          }
+        },
+        "generate_activation_report": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.67,
+            "median_ms": 0.66,
+            "p95_ms": 0.72,
+            "min_ms": 0.63,
+            "max_ms": 0.74
+          }
+        },
+        "run": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 1.54,
+            "median_ms": 1.53,
+            "p95_ms": 1.6,
+            "min_ms": 1.49,
+            "max_ms": 1.72
+          }
+        }
+      }
+    },
+    {
+      "agent_name": "MetricsCollector",
+      "file": "metrics_collector.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.453970",
+      "status": "SUCCESS",
+      "iterations": 100,
+      "initialization": {
+        "mean_ms": 0.0,
+        "median_ms": 0.0,
+        "p50_ms": 0.0,
+        "p95_ms": 0.0,
+        "p99_ms": 0.01,
+        "min_ms": 0.0,
+        "max_ms": 0.01,
+        "std_dev_ms": 0.0
+      },
+      "operations": {
+        "export_metrics_prometheus": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.11,
+            "median_ms": 0.1,
+            "p95_ms": 0.13,
+            "min_ms": 0.1,
+            "max_ms": 0.15
+          }
+        },
+        "get_all_metrics": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 0.12,
+            "median_ms": 0.11,
+            "p95_ms": 0.14,
+            "min_ms": 0.11,
+            "max_ms": 0.16
+          }
+        },
+        "get_counter": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        },
+        "get_gauge": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        },
+        "get_histogram_stats": {
+          "status": "SKIP",
+          "reason": "Requires arguments"
+        }
+      }
+    },
+    {
+      "agent_name": "PerformanceMonitor",
+      "file": "performance_monitor.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.466589",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "MetricsCollector",
+      "file": "metrics.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.466959",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "DatabaseManager",
+      "file": "database_wrapper.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.467229",
+      "status": "FAILED",
+      "error": "Could not load module"
+    },
+    {
+      "agent_name": "AgentDiscoverySystem",
+      "file": "agent_discovery_complete.py",
+      "benchmark_timestamp": "2025-10-20T17:25:31.467565",
+      "status": "SUCCESS",
+      "iterations": 100,
+      "initialization": {
+        "mean_ms": 0.0,
+        "median_ms": 0.0,
+        "p50_ms": 0.0,
+        "p95_ms": 0.0,
+        "p99_ms": 0.01,
+        "min_ms": 0.0,
+        "max_ms": 0.01,
+        "std_dev_ms": 0.0
+      },
+      "operations": {
+        "discover_all_agents": {
+          "status": "SUCCESS",
+          "iterations": 50,
+          "timing": {
+            "mean_ms": 1886.84,
+            "median_ms": 1887.13,
+            "p95_ms": 1927.74,
+            "min_ms": 1842.03,
+            "max_ms": 1932.16
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total_agents_benchmarked": 11,
+    "successful_benchmarks": 4,
+    "failed_benchmarks": 0,
+    "success_rate": "36.36%",
+    "initialization": {
+      "mean_ms": 0.0,
+      "median_ms": 0.0,
+      "fastest_ms": 0.0,
+      "slowest_ms": 0.01
+    },
+    "operations": {
+      "agents_with_ops": 4,
+      "total_operations": 15,
+      "avg_ops_per_agent": 3.8
+    },
+    "memory": {
+      "potential_leaks": 0,
+      "leaky_components": []
+    }
+  }
+}
