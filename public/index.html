@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YMERA Multi-Agent Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 48px; margin-bottom: 10px; }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        .status {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .link-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 0.3s;
+            text-align: center;
+        }
+        .link-card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>YMERA Multi-Agent Platform</h1>
+            <span class="status">✓ OPERATIONAL</span>
+        </div>
+        
+        <div class="links">
+            <a href="/docs" class="link-card">
+                <h3>📚 API Docs</h3>
+                <p>Swagger UI</p>
+            </a>
+            <a href="/health" class="link-card">
+                <h3>💚 Health</h3>
+                <p>System Status</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
