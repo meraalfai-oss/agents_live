@@ -274,7 +274,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 # Add CORS middleware with proper configuration
 # In production, restrict origins to specific domains
-allowed_origins = settings.cors_origins if hasattr(settings, 'cors_origins') and settings.cors_origins else ["http://localhost:3000"]
+allowed_origins = settings.get_cors_origins_list() if hasattr(settings, 'get_cors_origins_list') else ["http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,
