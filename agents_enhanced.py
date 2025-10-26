@@ -80,6 +80,8 @@ __all__ = [
     'EnhancedCommunicationAgent',
     'EnhancedLearningAgent',
 ]
+
+"""
 Enhanced Agents Module
 Demonstrates enhanced agent capabilities
 """
