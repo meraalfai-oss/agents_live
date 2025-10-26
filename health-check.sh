@@ -1,106 +1,73 @@
 #!/bin/bash
-# YMERA Platform Health Check Script
-# Version: 2.0.0
+# YMERA Platform - Health Check Script
+# Performs comprehensive health checks after deployment
 
-GREEN='\033[0;32m'
+set -e
+
+# Configuration
+API_URL="${API_URL:-http://localhost:8000}"
+
+# Colors
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-BASE_URL="${BASE_URL:-http://localhost:8000}"
+log_info() {
+    echo -e "${GREEN}[✓]${NC} $1"
+}
 
-echo "============================================="
-echo "YMERA Platform Health Check"
-echo "============================================="
-echo ""
-echo "Checking: $BASE_URL"
-echo ""
+log_error() {
+    echo -e "${RED}[✗]${NC} $1"
+}
 
-# Function to check endpoint
+# Check HTTP endpoint
 check_endpoint() {
-    local name=$1
-    local url=$2
-    local expected_code=${3:-200}
+    local endpoint=$1
+    local expected_status=${2:-200}
     
-    printf "%-25s" "$name:"
+    status_code=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL$endpoint")
     
-    response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
-    
-    if [ "$response" -eq "$expected_code" ]; then
-        echo -e "${GREEN}✓ OK${NC} (HTTP $response)"
+    if [ "$status_code" -eq "$expected_status" ]; then
+        log_info "Endpoint $endpoint returned $status_code"
         return 0
     else
-        echo -e "${RED}✗ FAILED${NC} (HTTP $response)"
+        log_error "Endpoint $endpoint returned $status_code (expected $expected_status)"
         return 1
     fi
 }
 
-# Check main endpoints
-PASSED=0
-FAILED=0
-
-# Application health
-if check_endpoint "Application Health" "$BASE_URL/health"; then
-    PASSED=$((PASSED + 1))
-else
-    FAILED=$((FAILED + 1))
-fi
-
-# Database health
-if check_endpoint "Database Health" "$BASE_URL/health/db"; then
-    PASSED=$((PASSED + 1))
-else
-    FAILED=$((FAILED + 1))
-fi
-
-# Redis health
-if check_endpoint "Cache Health" "$BASE_URL/health/redis"; then
-    PASSED=$((PASSED + 1))
-else
-    FAILED=$((FAILED + 1))
-fi
-
-# Metrics endpoint
-if check_endpoint "Metrics Endpoint" "$BASE_URL/metrics"; then
-    PASSED=$((PASSED + 1))
-else
-    FAILED=$((FAILED + 1))
-fi
-
-# API Documentation
-if check_endpoint "API Documentation" "$BASE_URL/docs"; then
-    PASSED=$((PASSED + 1))
-else
-    FAILED=$((FAILED + 1))
-fi
-
-# Check Docker containers if docker-compose is available
-echo ""
-echo "Docker Container Status:"
-if command -v docker-compose &> /dev/null || docker compose version &> /dev/null 2>&1; then
-    docker-compose ps 2>/dev/null || docker compose ps 2>/dev/null || echo "No containers running"
-else
-    echo "Docker Compose not available"
-fi
-
-# Summary
-echo ""
-echo "============================================="
-echo "Health Check Summary"
-echo "============================================="
-echo -e "Passed: ${GREEN}$PASSED${NC}"
-echo -e "Failed: ${RED}$FAILED${NC}"
-echo ""
-
-if [ $FAILED -eq 0 ]; then
-    echo -e "${GREEN}✓ All checks passed${NC}"
-    exit 0
-else
-    echo -e "${RED}✗ Some checks failed${NC}"
+# Main health check
+main() {
+    echo "Running health checks..."
+    
+    # Check health endpoint
+    if ! check_endpoint "/health" 200; then
+        exit 1
+    fi
+    
+    # Check readiness endpoint
+    if ! check_endpoint "/ready" 200; then
+        exit 1
+    fi
+    
+    # Check liveness endpoint
+    if ! check_endpoint "/live" 200; then
+        exit 1
+    fi
+    
+    # Check version endpoint
+    if ! check_endpoint "/version" 200; then
+        exit 1
+    fi
+    
+    # Check metrics endpoint
+    if ! check_endpoint "/metrics" 200; then
+        exit 1
+    fi
+    
     echo ""
-    echo "Troubleshooting:"
-    echo "  1. Check if services are running: docker-compose ps"
-    echo "  2. View logs: docker-compose logs -f"
-    echo "  3. Restart services: docker-compose restart"
-    exit 1
-fi
+    log_info "All health checks passed!"
+}
+
+main "$@"
