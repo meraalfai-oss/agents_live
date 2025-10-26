@@ -327,7 +327,7 @@ async def _get_total_queue_size() -> int:
             size = await redis_client.zcard(queue)
             total_size += size
         return total_size
-    except:
+    except Exception:
         return 0
 
 async def _get_db_metrics() -> dict:
