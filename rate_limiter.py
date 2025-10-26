@@ -1,3 +1,4 @@
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse
@@ -18,23 +19,27 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             client_ip = request.client.host
             key = f"rate_limit:{client_ip}"
             
+            current_requests = await self.redis.lrange(key, 0, -1)
             current_time = time.time()
-            window_start = current_time - self.settings.rate_limit_window
             
-            # Remove expired requests efficiently using ZREMRANGEBYSCORE
-            await self.redis.zremrangebyscore(key, '-inf', f'({window_start}')
+            # Remove expired requests
+            pipeline = self.redis.pipeline()
+            for req_time_str in current_requests:
+                req_time = float(req_time_str)
+                if current_time - req_time > self.settings.rate_limit_window:
+                    pipeline.lrem(key, 1, req_time_str)
+            await pipeline.execute()
             
-            # Count requests in the current window
-            req_count = await self.redis.zcount(key, window_start, current_time)
+            # Re-fetch after cleanup
+            current_requests = await self.redis.lrange(key, 0, -1)
             
-            if req_count >= self.settings.rate_limit_requests:
+            if len(current_requests) >= self.settings.rate_limit_requests:
                 return JSONResponse(
                     {"detail": "Rate limit exceeded"},
                     status_code=429
                 )
             
-            # Add current request timestamp to the sorted set
-            await self.redis.zadd(key, {str(current_time): current_time})
+            await self.redis.rpush(key, current_time)
             await self.redis.expire(key, self.settings.rate_limit_window)
         
         response = await call_next(request)
