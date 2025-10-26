@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+logger = logging.getLogger(__name__)
+
 """
+import logging
+
 Comprehensive Agent Testing Tool
 
 Tests individual agents for initialization, method execution, and capability validation.
@@ -224,20 +228,20 @@ class AgentTester:
         agents_path = Path(agents_dir)
         
         if not agents_path.exists():
-            print(f"❌ Directory not found: {agents_dir}")
+            logger.info(f"❌ Directory not found: {agents_dir}")
             return
         
         agent_files = sorted(agents_path.glob("*_agent.py"))
         
-        print(f"\n{'='*70}")
-        print(f"COMPREHENSIVE AGENT TESTING")
-        print(f"{'='*70}")
-        print(f"Directory: {agents_dir}")
-        print(f"Agents found: {len(agent_files)}")
-        print(f"{'='*70}\n")
+        logger.info(f"\n{'='*70}")
+        logger.info(f"COMPREHENSIVE AGENT TESTING")
+        logger.info(f"{'='*70}")
+        logger.info(f"Directory: {agents_dir}")
+        logger.info(f"Agents found: {len(agent_files)}")
+        logger.info(f"{'='*70}\n")
         
         for agent_file in agent_files:
-            print(f"Testing: {agent_file.name}...", end=" ")
+            logger.info(f"Testing: {agent_file.name}...", end=" ")
             
             test_result = await self.test_agent_file(agent_file)
             self.results["test_details"].append(test_result)
@@ -245,18 +249,18 @@ class AgentTester:
             
             if test_result["overall_status"] == "PASS":
                 self.results["agents_passed"] += 1
-                print("✅ PASS")
+                logger.info("✅ PASS")
             elif test_result["overall_status"] == "PARTIAL":
                 self.results["agents_passed"] += 1  # Count partial as passed
-                print("⚠️  PARTIAL")
+                logger.info("⚠️  PARTIAL")
             elif test_result["overall_status"] == "SKIP":
                 self.results["agents_skipped"] += 1
-                print("⏭️  SKIP")
+                logger.info("⏭️  SKIP")
             else:
                 self.results["agents_failed"] += 1
-                print("❌ FAIL")
+                logger.error("❌ FAIL")
                 if test_result.get("import_status"):
-                    print(f"  Error: {test_result['import_status'].get('message', 'Unknown error')}")
+                    logger.error(f"  Error: {test_result['import_status'].get('message', 'Unknown error')}")
     
     def generate_report(self, output_file: str = "agent_test_report.json") -> None:
         """Generate comprehensive test report"""
@@ -278,28 +282,28 @@ class AgentTester:
         with open(output_file, 'w') as f:
             json.dump(self.results, f, indent=2)
         
-        print(f"\n{'='*70}")
-        print("TEST SUMMARY")
-        print(f"{'='*70}")
-        print(f"Total Agents:   {total}")
-        print(f"✅ Passed:      {passed}")
-        print(f"❌ Failed:      {failed}")
-        print(f"⏭️  Skipped:     {skipped}")
-        print(f"Pass Rate:      {self.results['summary']['pass_rate']}")
-        print(f"{'='*70}")
-        print(f"\nDetailed report saved to: {output_file}")
+        logger.info(f"\n{'='*70}")
+        logger.info("TEST SUMMARY")
+        logger.info(f"{'='*70}")
+        logger.info(f"Total Agents:   {total}")
+        logger.info(f"✅ Passed:      {passed}")
+        logger.error(f"❌ Failed:      {failed}")
+        logger.info(f"⏭️  Skipped:     {skipped}")
+        logger.info(f"Pass Rate:      {self.results['summary']['pass_rate']}")
+        logger.info(f"{'='*70}")
+        logger.info(f"\nDetailed report saved to: {output_file}")
     
     async def test_specific_agent(self, agent_path: str) -> None:
         """Test a specific agent file with detailed output"""
         agent_file = Path(agent_path)
         
         if not agent_file.exists():
-            print(f"❌ File not found: {agent_path}")
+            logger.info(f"❌ File not found: {agent_path}")
             return
         
-        print(f"\n{'='*70}")
-        print(f"Testing Agent: {agent_file.name}")
-        print(f"{'='*70}\n")
+        logger.info(f"\n{'='*70}")
+        logger.info(f"Testing Agent: {agent_file.name}")
+        logger.info(f"{'='*70}\n")
         
         test_result = await self.test_agent_file(agent_file)
         self.results["test_details"].append(test_result)
@@ -307,61 +311,61 @@ class AgentTester:
         
         if test_result["overall_status"] == "PASS":
             self.results["agents_passed"] = 1
-            print("\n✅ Overall Status: PASS")
+            logger.info("\n✅ Overall Status: PASS")
         elif test_result["overall_status"] == "PARTIAL":
             self.results["agents_passed"] = 1
-            print("\n⚠️  Overall Status: PARTIAL (some methods failed)")
+            logger.error("\n⚠️  Overall Status: PARTIAL (some methods failed)")
         elif test_result["overall_status"] == "SKIP":
             self.results["agents_skipped"] = 1
-            print("\n⏭️  Overall Status: SKIP")
+            logger.info("\n⏭️  Overall Status: SKIP")
         else:
             self.results["agents_failed"] = 1
-            print("\n❌ Overall Status: FAIL")
+            logger.error("\n❌ Overall Status: FAIL")
         
         # Print detailed results
-        print(f"\n{'='*70}")
-        print("DETAILED RESULTS")
-        print(f"{'='*70}")
+        logger.info(f"\n{'='*70}")
+        logger.info("DETAILED RESULTS")
+        logger.info(f"{'='*70}")
         
         if test_result.get("import_status"):
             status = test_result["import_status"]["status"]
             emoji = "✅" if status == "PASS" else "❌"
-            print(f"\n{emoji} Import: {status}")
+            logger.info(f"\n{emoji} Import: {status}")
             if status != "PASS":
-                print(f"  Message: {test_result['import_status'].get('message')}")
+                logger.info(f"  Message: {test_result['import_status'].get('message')}")
         
         if test_result.get("initialization"):
             status = test_result["initialization"]["status"]
             emoji = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⏭️"
-            print(f"\n{emoji} Initialization: {status}")
+            logger.info(f"\n{emoji} Initialization: {status}")
             if status != "PASS":
-                print(f"  Message: {test_result['initialization'].get('message')}")
+                logger.info(f"  Message: {test_result['initialization'].get('message')}")
         
         if test_result.get("methods"):
-            print(f"\n📋 Methods Tested: {len(test_result['methods'])}")
+            logger.info(f"\n📋 Methods Tested: {len(test_result['methods'])}")
             passed = [m for m in test_result["methods"] if m["status"] == "PASS"]
             skipped = [m for m in test_result["methods"] if m["status"] == "SKIP"]
             failed = [m for m in test_result["methods"] if m["status"] == "FAIL"]
             timeout = [m for m in test_result["methods"] if m["status"] == "TIMEOUT"]
             
-            print(f"  ✅ Passed: {len(passed)}")
-            print(f"  ⏭️  Skipped: {len(skipped)}")
-            print(f"  ❌ Failed: {len(failed)}")
+            logger.info(f"  ✅ Passed: {len(passed)}")
+            logger.info(f"  ⏭️  Skipped: {len(skipped)}")
+            logger.error(f"  ❌ Failed: {len(failed)}")
             if timeout:
-                print(f"  ⏱️  Timeout: {len(timeout)}")
+                logger.info(f"  ⏱️  Timeout: {len(timeout)}")
             
             if failed:
-                print("\n  Failed Methods:")
+                logger.error("\n  Failed Methods:")
                 for method in failed:
-                    print(f"    - {method['method']}: {method.get('message', 'Unknown error')}")
+                    logger.error(f"    - {method['method']}: {method.get('message', 'Unknown error')}")
         
         if test_result.get("attributes"):
-            print(f"\n🔧 Attributes:")
+            logger.info(f"\n🔧 Attributes:")
             for attr, info in test_result["attributes"].items():
                 if info.get("present"):
-                    print(f"  ✅ {attr}: {info.get('type', 'N/A')}")
+                    logger.info(f"  ✅ {attr}: {info.get('type', 'N/A')}")
                 else:
-                    print(f"  ❌ {attr}: Not present")
+                    logger.info(f"  ❌ {attr}: Not present")
 
 
 async def main():

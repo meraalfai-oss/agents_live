@@ -1,7 +1,11 @@
 # PLUGIN ARCHITECTURE FOR EXPANSION
 
+import logging
+
 from collections import defaultdict
 
+
+logger = logging.getLogger(__name__)
 
 class PluginManager:
     def __init__(self):
@@ -10,7 +14,7 @@ class PluginManager:
     
     def register_plugin(self, plugin_name, plugin_class):
         self.plugins[plugin_name] = plugin_class
-        print(f"✅ Plugin registered: {plugin_name}")
+        logger.info(f"✅ Plugin registered: {plugin_name}")
     
     def add_hook(self, hook_name, callback):
         self.hooks[hook_name].append(callback)
