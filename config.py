@@ -1,11 +1,66 @@
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from typing import List, Optional
+import os
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
+
+    # API Configuration
+    api_host: str = "0.0.0.0"
+    api_port: int = 8000
+    debug: bool = False
+    
+    # Database
+    database_url: str
+    redis_url: str = "redis://localhost:6379/0"
+    
+    # Security
+    jwt_secret_key: str
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 30
+    
+    # CORS
+    cors_origins: List[str] = ["http://localhost:3000"]
+    allowed_hosts: List[str] = ["*"]
+    
+    # Rate Limiting
+    rate_limit_requests: int = 100
+    rate_limit_window: int = 60
+    
+    # Agent Configuration
+    max_conversation_history: int = 50
+    learning_batch_size: int = 10
+    model_update_interval: int = 3600
+    
+    # Manager Agent Communication
+    manager_agent_url: Optional[str] = None
+    
+    @field_validator("database_url")
+    @classmethod
+    def validate_database_url(cls, v):
+        if not v:
+            raise ValueError("DATABASE_URL is required")
+        return v
+    
+    @field_validator("jwt_secret_key")
+    @classmethod
+    def validate_jwt_secret(cls, v):
+        if not v:
+            raise ValueError("JWT_SECRET_KEY is required")
+        if len(v) < 32:
+            raise ValueError("JWT_SECRET_KEY must be at least 32 characters")
+        return v
+
 """
 Core Configuration Module
 Centralized configuration management using Pydantic Settings
 """
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 from pydantic import field_validator, Field
-from typing import List, Optional, Union
+from typing import List, Optional
 import os
 from pathlib import Path
 
@@ -15,13 +70,6 @@ class ProjectAgentSettings(BaseSettings):
     Project Agent Configuration Settings
     All settings loaded from environment variables or .env file
     """
-    
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore"
-    )
     
     # ============================================================================
     # SERVER CONFIGURATION
@@ -51,8 +99,8 @@ class ProjectAgentSettings(BaseSettings):
     # ============================================================================
     # KAFKA CONFIGURATION
     # ============================================================================
-    kafka_bootstrap_servers: Union[str, List[str]] = Field(
-        default="localhost:9092",
+    kafka_bootstrap_servers: List[str] = Field(
+        default=["localhost:9092"],
         env="KAFKA_BOOTSTRAP_SERVERS"
     )
     kafka_topic_prefix: str = Field(default="project_agent", env="KAFKA_TOPIC_PREFIX")
@@ -66,12 +114,12 @@ class ProjectAgentSettings(BaseSettings):
     jwt_public_key_path: Optional[str] = Field(default=None, env="JWT_PUBLIC_KEY_PATH")
     jwt_private_key_path: Optional[str] = Field(default=None, env="JWT_PRIVATE_KEY_PATH")
     
-    cors_origins: Union[str, List[str]] = Field(
-        default="http://localhost:3000",
+    cors_origins: List[str] = Field(
+        default=["http://localhost:3000"],
         env="CORS_ORIGINS"
     )
-    trusted_hosts: Union[str, List[str]] = Field(
-        default="localhost,127.0.0.1",
+    trusted_hosts: List[str] = Field(
+        default=["localhost", "127.0.0.1"],
         env="TRUSTED_HOSTS"
     )
     
@@ -162,45 +210,49 @@ class ProjectAgentSettings(BaseSettings):
     # VALIDATORS
     # ============================================================================
     
+    @field_validator('jwt_secret_key')
+    @classmethod
+    def validate_jwt_secret(cls, v):
+        """Ensure JWT secret is strong enough"""
+        if len(v) < 32:
+            raise ValueError('JWT_SECRET_KEY must be at least 32 characters')
+        if v == "CHANGE_ME_TO_A_SECURE_256_BIT_SECRET_KEY_MINIMUM_32_CHARS":
+            raise ValueError('JWT_SECRET_KEY must be changed from default value!')
+        return v
+    
+    @field_validator('quality_threshold')
+    @classmethod
+    def validate_quality_threshold(cls, v):
+        """Ensure quality threshold is valid"""
+        if not 0 <= v <= 100:
+            raise ValueError('QUALITY_THRESHOLD must be between 0 and 100')
+        return v
+    
+    @field_validator('quality_code_weight', 'quality_security_weight', 
+               'quality_performance_weight', 'quality_documentation_weight')
+    @classmethod
+    def validate_quality_weights(cls, v):
+        """Ensure quality weights are valid"""
+        if not 0 <= v <= 1:
+            raise ValueError('Quality weights must be between 0 and 1')
+        return v
+    
     @field_validator('cors_origins', mode='before')
     @classmethod
-    def parse_cors_origins(cls, v) -> List[str]:
+    def parse_cors_origins(cls, v):
         """Parse CORS origins from string or list"""
-        if v is None or v == '':
-            return ["http://localhost:3000"]
         if isinstance(v, str):
-            # Handle comma-separated values
-            origins = [s.strip() for s in v.split(',') if s.strip()]
-            return origins if origins else ["http://localhost:3000"]
-        if isinstance(v, list):
-            return v
-        return ["http://localhost:3000"]
+            import json
+            return json.loads(v)
+        return v
     
     @field_validator('kafka_bootstrap_servers', mode='before')
     @classmethod
-    def parse_kafka_servers(cls, v) -> List[str]:
+    def parse_kafka_servers(cls, v):
         """Parse Kafka servers from string or list"""
-        if v is None or v == '':
-            return ["localhost:9092"]
         if isinstance(v, str):
-            servers = [s.strip() for s in v.split(',') if s.strip()]
-            return servers if servers else ["localhost:9092"]
-        if isinstance(v, list):
-            return v
-        return ["localhost:9092"]
-    
-    @field_validator('trusted_hosts', mode='before')
-    @classmethod
-    def parse_trusted_hosts(cls, v) -> List[str]:
-        """Parse trusted hosts from string or list"""
-        if v is None or v == '':
-            return ["localhost", "127.0.0.1"]
-        if isinstance(v, str):
-            hosts = [s.strip() for s in v.split(',') if s.strip()]
-            return hosts if hosts else ["localhost", "127.0.0.1"]
-        if isinstance(v, list):
-            return v
-        return ["localhost", "127.0.0.1"]
+            return [s.strip() for s in v.split(',')]
+        return v
     
     @field_validator('storage_path')
     @classmethod
@@ -217,6 +269,12 @@ class ProjectAgentSettings(BaseSettings):
         path = Path(v).parent
         path.mkdir(parents=True, exist_ok=True)
         return v
+    
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_file_encoding="utf-8"
+    )
     
     def get_agent_urls(self) -> dict:
         """Get all configured agent URLs"""
@@ -237,9 +295,6 @@ class ProjectAgentSettings(BaseSettings):
         """Check if running in development environment"""
         return self.environment.lower() == "development"
 
-
-# Backwards compatibility alias
-Settings = ProjectAgentSettings
 
 # Global settings instance
 settings = ProjectAgentSettings()
