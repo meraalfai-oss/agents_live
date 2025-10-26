@@ -1176,11 +1176,11 @@ if __name__ == "__main__":
             include_docs=True
         )
         
-        print("Generated Code:")
-        print(artifact.code)
-        print(f"\nQuality Score: {artifact.quality_score}")
-        print(f"Complexity: {artifact.complexity_estimate}")
-        print(f"Best Practices: {', '.join(artifact.best_practices_applied)}")
-        print(f"\nMetrics: {generator.get_metrics()}")
+        logger.info("Generated Code:")
+        logger.info(artifact.code)
+        logger.info(f"\nQuality Score: {artifact.quality_score}")
+        logger.info(f"Complexity: {artifact.complexity_estimate}")
+        logger.info(f"Best Practices: {', '.join(artifact.best_practices_applied)}")
+        logger.info(f"\nMetrics: {generator.get_metrics()}")
     
     asyncio.run(test_generator())

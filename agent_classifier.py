@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+import logging
+
 """
+logger = logging.getLogger(__name__)
+
 Agent Classifier
 Classifies agents by type, status, and capability with measured statistics
 """
@@ -170,10 +174,10 @@ def classify_agents() -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("AGENT CLASSIFICATION ANALYZER")
-    print("=" * 60)
-    print()
+    logger.info("=" * 60)
+    logger.info("AGENT CLASSIFICATION ANALYZER")
+    logger.info("=" * 60)
+    logger.info()
     
     result = classify_agents()
     
@@ -182,31 +186,31 @@ if __name__ == "__main__":
     with open(output_file, 'w') as f:
         json.dump(result, f, indent=2)
     
-    print("Classification Summary:")
-    print("-" * 60)
-    print(f"Total agents: {result['summary']['total_agents']}")
-    print()
+    logger.info("Classification Summary:")
+    logger.info("-" * 60)
+    logger.info(f"Total agents: {result['summary']['total_agents']}")
+    logger.info()
     
-    print("By Type:")
+    logger.info("By Type:")
     for agent_type, count in result['summary']['by_type_counts'].items():
         if count > 0:
-            print(f"  {agent_type:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
-    print()
+            logger.info(f"  {agent_type:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
+    logger.info()
     
-    print("By Status:")
+    logger.info("By Status:")
     for status, count in result['summary']['by_status_counts'].items():
-        print(f"  {status:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
-    print()
+        logger.info(f"  {status:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
+    logger.info()
     
-    print("By Capabilities:")
+    logger.info("By Capabilities:")
     for capability, count in result['summary']['by_capability_counts'].items():
-        print(f"  {capability:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
-    print()
+        logger.info(f"  {capability:20s}: {count:3d} ({count/result['summary']['total_agents']*100:5.1f}%)")
+    logger.info()
     
-    print("Key Metrics:")
-    print(f"  Completion Rate:      {result['summary']['completion_rate']}")
-    print(f"  Async Adoption:       {result['summary']['async_adoption']}")
-    print(f"  BaseAgent Compliance: {result['summary']['base_agent_compliance']}")
-    print()
-    print(f"Classification saved to: {output_file}")
-    print("=" * 60)
+    logger.info("Key Metrics:")
+    logger.info(f"  Completion Rate:      {result['summary']['completion_rate']}")
+    logger.info(f"  Async Adoption:       {result['summary']['async_adoption']}")
+    logger.info(f"  BaseAgent Compliance: {result['summary']['base_agent_compliance']}")
+    logger.info()
+    logger.info(f"Classification saved to: {output_file}")
+    logger.info("=" * 60)

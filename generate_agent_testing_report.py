@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
+logger = logging.getLogger(__name__)
+
 """
 Generate Agent Testing Report
 Creates comprehensive markdown report with actual test results
 """
+
+import logging
 
 import json
 from datetime import datetime
@@ -172,7 +176,7 @@ def generate_report():
     with open('AGENT_TESTING_REPORT.md', 'w') as f:
         f.write('\n'.join(report))
     
-    print("Report generated: AGENT_TESTING_REPORT.md")
+    logger.info("Report generated: AGENT_TESTING_REPORT.md")
 
 
 if __name__ == "__main__":

@@ -534,7 +534,7 @@ class KnowledgeGraphEngine:
         try:
             avg_degree = sum(dict(self.graph.degree()).values()) / len(self.graph.nodes()) if self.graph.nodes() else 0
             density = nx.density(self.graph)
-        except:
+        except Exception:
             avg_degree = 0
             density = 0
         

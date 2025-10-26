@@ -1,5 +1,7 @@
 """Metrics Collector for Prometheus"""
 
+from typing import Dict, List, Optional, Any
+
 from prometheus_client import Counter, Gauge, Histogram, Summary
 import structlog
 
@@ -7,7 +9,7 @@ import structlog
 class MetricsCollector:
     """Collects and exposes metrics for Prometheus"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = structlog.get_logger(__name__)
         
         # Counters
@@ -92,7 +94,7 @@ class MetricsCollector:
             ['endpoint', 'method']
         )
     
-    def increment_counter(self, name: str, labels: dict = None):
+    def increment_counter(self, name: str, labels: dict = None) -> None:
         """Increment a counter metric"""
         try:
             if name in self.counters:
@@ -103,7 +105,7 @@ class MetricsCollector:
         except Exception as e:
             self.logger.error(f"Error incrementing counter {name}: {e}")
     
-    def set_gauge(self, name: str, value: float):
+    def set_gauge(self, name: str, value: float) -> None:
         """Set a gauge metric"""
         try:
             if name in self.gauges:
@@ -111,7 +113,7 @@ class MetricsCollector:
         except Exception as e:
             self.logger.error(f"Error setting gauge {name}: {e}")
     
-    def observe_histogram(self, name: str, value: float, labels: dict = None):
+    def observe_histogram(self, name: str, value: float, labels: dict = None) -> None:
         """Observe a histogram metric"""
         try:
             if name in self.histograms:

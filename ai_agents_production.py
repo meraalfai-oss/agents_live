@@ -977,15 +977,21 @@ async def example_usage():
     # Mock database pool for example
     db_pool = None  # In production, use actual asyncpg pool
     
+    # Get API key from environment variable (NEVER hardcode)
+    import os
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY environment variable must be set")
+    
     orchestrator = AIAgentOrchestrator(
-        api_key="your-anthropic-api-key",
+        api_key=api_key,
         db_pool=db_pool
     )
     
     await orchestrator.initialize()
     
     # Example 1: Automatic agent selection
-    print("=== Automatic Agent Selection ===")
+    logger.info("=== Automatic Agent Selection ===")
     response = await orchestrator.analyze_with_best_agent(
         task="Analyze this Python code for security vulnerabilities",
         context={
@@ -994,26 +1000,26 @@ async def example_usage():
         }
     )
     
-    print(f"Agent: {response.agent_id}")
-    print(f"Confidence: {response.confidence_level}")
-    print(f"Summary: {response.executive_summary}")
-    print(f"Processing time: {response.processing_time:.2f}s")
-    print()
+    logger.info(f"Agent: {response.agent_id}")
+    logger.info(f"Confidence: {response.confidence_level}")
+    logger.info(f"Summary: {response.executive_summary}")
+    logger.info(f"Processing time: {response.processing_time:.2f}s")
+    logger.info()
     
     # Example 2: Specific agent usage
-    print("=== Specific Agent Usage ===")
+    logger.info("=== Specific Agent Usage ===")
     code_agent = orchestrator.get_agent(AgentType.CODE_ANALYZER)
     code_response = await code_agent.analyze(
         task="Review this function for performance optimization",
         context={"language": "python"}
     )
     
-    print(f"Summary: {code_response.executive_summary}")
-    print(f"Recommendations: {len(code_response.recommendations)}")
-    print()
+    logger.info(f"Summary: {code_response.executive_summary}")
+    logger.info(f"Recommendations: {len(code_response.recommendations)}")
+    logger.info()
     
     # Example 3: Collaborative analysis
-    print("=== Collaborative Analysis ===")
+    logger.info("=== Collaborative Analysis ===")
     collaborative = await orchestrator.collaborative_analysis(
         task="Analyze authentication function",
         agent_types=[
@@ -1024,14 +1030,14 @@ async def example_usage():
     )
     
     for agent_type, response in collaborative.items():
-        print(f"{agent_type.value}: {response.confidence_level} confidence")
-    print()
+        logger.info(f"{agent_type.value}: {response.confidence_level} confidence")
+    logger.info()
     
     # Example 4: System metrics
-    print("=== System Metrics ===")
+    logger.info("=== System Metrics ===")
     metrics = orchestrator.get_system_metrics()
-    print(f"Total requests: {metrics['orchestrator']['total_requests']}")
-    print(f"Agents active: {metrics['total_agents']}")
+    logger.info(f"Total requests: {metrics['orchestrator']['total_requests']}")
+    logger.info(f"Agents active: {metrics['total_agents']}")
     
     await orchestrator.cleanup()
 
@@ -1045,7 +1051,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(example_usage())
     except KeyboardInterrupt:
-        print("\nShutdown by user")
+        logger.info("\nShutdown by user")
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         logging.exception(e)

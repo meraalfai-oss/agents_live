@@ -12,7 +12,7 @@ from pythonjsonlogger import jsonlogger
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     """Custom JSON formatter with additional fields"""
     
-    def add_fields(self, log_record, record, message_dict):
+    def add_fields(self, log_record, record, message_dict) -> None:
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
         log_record['timestamp'] = self.formatTime(record, self.datefmt)
         log_record['level'] = record.levelname

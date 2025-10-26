@@ -151,7 +151,7 @@ def get_settings() -> Settings:
         _settings_instance = Settings()
     return _settings_instance
 
-def reset_settings():
+def reset_settings() -> None:
     """Reset global settings instance (useful for testing)"""
     global _settings_instance
     _settings_instance = None
@@ -256,7 +256,7 @@ def validate_settings(settings: Settings) -> tuple[bool, list[str]]:
 class TemporarySettings:
     """Context manager for temporary settings changes (useful for testing)"""
     
-    def __init__(self, **overrides):
+    def __init__(self, **overrides) -> None:
         self.overrides = overrides
         self.original_values = {}
         self.settings = get_settings()
@@ -323,7 +323,7 @@ def export_config_to_env_file(filepath: str = ".env.example") -> None:
 # USAGE EXAMPLES
 # ============================================================================
 
-def print_configuration_examples():
+def print_configuration_examples() -> None:
     """Print usage examples"""
     examples = """
     ═══════════════════════════════════════════════════════════════

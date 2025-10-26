@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+import logging
+
 """
+logger = logging.getLogger(__name__)
+
 Phase 2: Remove Duplicate Files
 Safely removes identified duplicate files after verification
 """
@@ -32,11 +36,11 @@ class DuplicateRemover:
         
     def remove_duplicates(self):
         """Remove all identified duplicate files."""
-        print("=" * 80)
-        print("YMERA PHASE 2: REMOVE DUPLICATES")
-        print("=" * 80)
-        print(f"\nMode: {'DRY RUN (no files will be deleted)' if self.dry_run else 'LIVE (files will be deleted)'}")
-        print()
+        logger.info("=" * 80)
+        logger.info("YMERA PHASE 2: REMOVE DUPLICATES")
+        logger.info("=" * 80)
+        logger.info(f"\nMode: {'DRY RUN (no files will be deleted)' if self.dry_run else 'LIVE (files will be deleted)'}")
+        logger.info()
         
         # Define duplicates to remove (keep the first one in each pair)
         duplicates_to_remove = [
@@ -67,49 +71,49 @@ class DuplicateRemover:
             self._remove_file(dup)
         
         # Summary
-        print("\n" + "=" * 80)
-        print(f"✅ Phase 2 {'Simulation' if self.dry_run else 'Execution'} Complete!")
-        print("=" * 80)
-        print(f"\nFiles {'would be' if self.dry_run else ''} removed: {len(self.removed_files)}")
+        logger.info("\n" + "=" * 80)
+        logger.info(f"✅ Phase 2 {'Simulation' if self.dry_run else 'Execution'} Complete!")
+        logger.info("=" * 80)
+        logger.info(f"\nFiles {'would be' if self.dry_run else ''} removed: {len(self.removed_files)}")
         
         if self.removed_files:
-            print("\nRemoved files:")
+            logger.info("\nRemoved files:")
             for f in self.removed_files:
-                print(f"  - {f}")
+                logger.info(f"  - {f}")
         
         if not self.dry_run and self.removed_files:
-            print(f"\nBackups saved to: {self.backup_dir}")
+            logger.info(f"\nBackups saved to: {self.backup_dir}")
             self._save_manifest()
         
         if self.dry_run:
-            print("\n⚠️  This was a DRY RUN. No files were actually deleted.")
-            print("To execute for real, run: python3 cleanup/02_remove_duplicates.py --execute")
+            logger.info("\n⚠️  This was a DRY RUN. No files were actually deleted.")
+            logger.info("To execute for real, run: python3 cleanup/02_remove_duplicates.py --execute")
     
     def _remove_file(self, duplicate_info: dict):
         """Remove a single duplicate file."""
         file_path = self.root / duplicate_info['file']
         
-        print(f"\n{'[DRY RUN] ' if self.dry_run else ''}Processing: {duplicate_info['file']}")
-        print(f"  Reason: {duplicate_info['reason']}")
+        logger.info(f"\n{'[DRY RUN] ' if self.dry_run else ''}Processing: {duplicate_info['file']}")
+        logger.info(f"  Reason: {duplicate_info['reason']}")
         if duplicate_info['keep']:
-            print(f"  Keeping: {duplicate_info['keep']}")
+            logger.info(f"  Keeping: {duplicate_info['keep']}")
         
         # Check if file exists
         if not file_path.exists():
-            print(f"  ⚠️  File not found, skipping")
+            logger.info(f"  ⚠️  File not found, skipping")
             return
         
         # Verify it's a file (not directory)
         if not file_path.is_file():
-            print(f"  ⚠️  Not a file, skipping")
+            logger.info(f"  ⚠️  Not a file, skipping")
             return
         
         # Get file size for reporting
         size = file_path.stat().st_size
-        print(f"  Size: {size} bytes")
+        logger.info(f"  Size: {size} bytes")
         
         if self.dry_run:
-            print(f"  ✅ Would remove this file")
+            logger.info(f"  ✅ Would remove this file")
             self.removed_files.append(duplicate_info['file'])
         else:
             # Create backup
@@ -118,10 +122,10 @@ class DuplicateRemover:
             # Remove the file
             try:
                 file_path.unlink()
-                print(f"  ✅ Removed successfully")
+                logger.info(f"  ✅ Removed successfully")
                 self.removed_files.append(duplicate_info['file'])
             except Exception as e:
-                print(f"  ❌ Error removing file: {e}")
+                logger.error(f"  ❌ Error removing file: {e}")
     
     def _backup_file(self, file_path: Path, relative_path: str):
         """Backup a file before deletion."""
@@ -130,9 +134,9 @@ class DuplicateRemover:
         
         try:
             shutil.copy2(file_path, backup_path)
-            print(f"  💾 Backed up to: cleanup/backups/...")
+            logger.info(f"  💾 Backed up to: cleanup/backups/...")
         except Exception as e:
-            print(f"  ⚠️  Backup failed: {e}")
+            logger.error(f"  ⚠️  Backup failed: {e}")
     
     def _save_manifest(self):
         """Save a manifest of removed files."""
@@ -146,7 +150,7 @@ class DuplicateRemover:
         with open(manifest_path, 'w') as f:
             json.dump(manifest, f, indent=2)
         
-        print(f"\nManifest saved: {manifest_path}")
+        logger.info(f"\nManifest saved: {manifest_path}")
 
 
 def main():
@@ -157,30 +161,30 @@ def main():
     dry_run = not execute
     
     if dry_run:
-        print("\n⚠️  Running in DRY RUN mode (simulation only)")
-        print("To execute for real, add --execute flag\n")
+        logger.info("\n⚠️  Running in DRY RUN mode (simulation only)")
+        logger.info("To execute for real, add --execute flag\n")
     else:
-        print("\n⚠️  Running in EXECUTE mode (files will be deleted)")
+        logger.info("\n⚠️  Running in EXECUTE mode (files will be deleted)")
         response = input("Are you sure you want to delete duplicate files? (yes/no): ")
         if response.lower() != 'yes':
-            print("Cancelled.")
+            logger.info("Cancelled.")
             return
-        print()
+        logger.info()
     
     remover = DuplicateRemover(Path.cwd(), dry_run=dry_run)
     remover.remove_duplicates()
     
     if dry_run:
-        print("\n📝 Next steps:")
-        print("1. Review the files that would be removed above")
-        print("2. Run with --execute flag to actually remove them")
-        print("3. Run tests: pytest")
-        print("4. Commit changes: git add -u && git commit -m 'Remove duplicate files'")
+        logger.info("\n📝 Next steps:")
+        logger.info("1. Review the files that would be removed above")
+        logger.info("2. Run with --execute flag to actually remove them")
+        logger.info("3. Run tests: pytest")
+        logger.info("4. Commit changes: git add -u && git commit -m 'Remove duplicate files'")
     else:
-        print("\n📝 Next steps:")
-        print("1. Run tests: pytest")
-        print("2. Verify nothing broke")
-        print("3. Commit changes: git add -u && git commit -m 'Remove duplicate files'")
+        logger.info("\n📝 Next steps:")
+        logger.info("1. Run tests: pytest")
+        logger.info("2. Verify nothing broke")
+        logger.info("3. Commit changes: git add -u && git commit -m 'Remove duplicate files'")
 
 
 if __name__ == "__main__":

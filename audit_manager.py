@@ -382,7 +382,7 @@ class AuditManager:
             if timestamp:
                 return datetime.fromisoformat(timestamp.decode('utf-8'))
             return None
-        except:
+        except Exception:
             return datetime.utcnow() - timedelta(minutes=random.randint(5, 60))
     
     async def _get_agent_reporting_frequency(self, agent_id: str) -> int:

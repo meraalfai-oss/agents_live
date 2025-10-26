@@ -25,7 +25,7 @@ logger = structlog.get_logger(__name__)
 class EncryptionManager:
     """Manages encryption and decryption operations"""
     
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.cipher: Optional[Any] = None
         self.logger = structlog.get_logger(__name__)

@@ -317,24 +317,11 @@ class ComponentEnhancer:
         category: str, 
         best_features: Dict[str, List[str]]
     ) -> str:
-            # Sort by feature importance (simple heuristic: shorter names = more general/important)
-            unique_features.sort(key=lambda x: (len(x), x))
-            
-            ranked_features[feature_type] = unique_features[:10]  # Keep top 10 features
-        
-        return ranked_features
-    
-    def create_enhanced_version(self, category: str, best_features: Dict[str, List[str]]) -> str:
         """
         Create enhanced unified version using best features
         
         Args:
             category: The component category
-            best_features: Dictionary of best features
-            
-        Returns:
-            Path to the enhanced version file
-            category: Component category name
             best_features: Dictionary of best features
             
         Returns:
@@ -475,7 +462,7 @@ class Enhanced{category.title().replace('_', '')}:
         if self.initialized:
             return
         
-        self.logger.info(f"Initializing enhanced {category} component")
+        self.logger.info(f"Initializing enhanced component")
         # Add initialization logic here
         self.initialized = True
     
@@ -498,14 +485,12 @@ class Enhanced{category.title().replace('_', '')}:
     
     async def cleanup(self):
         """Cleanup component resources"""
-        self.logger.info(f"Cleaning up enhanced {category} component")
+        self.logger.info("Cleaning up enhanced component")
         self.initialized = False
 
 
 # Example usage
 if __name__ == "__main__":
-    component = Enhanced{category.title().replace("_", "")}()
-    asyncio.run(component.initialize())
     async def main():
         component = Enhanced'''
         
@@ -521,18 +506,11 @@ if __name__ == "__main__":
         
         return template
     
-    def test_enhanced_component(
-        self, 
-        category: str, 
-        enhanced_component: str
-    ) -> Dict[str, Any]:
     def test_enhanced_component(self, category: str, enhanced_path: str) -> Dict[str, Any]:
         """
         Test enhanced component
         
         Args:
-            category: The component category
-            enhanced_component: Path to enhanced component
             category: Component category name
             enhanced_path: Path to enhanced component
             

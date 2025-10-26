@@ -139,6 +139,8 @@ __all__ = [
     'EnhancedResponseFormatter',
     'EnhancedAuthenticationHandler',
 ]
+
+"""
 Enhanced API Module
 Advanced API components with security and performance features
 """
